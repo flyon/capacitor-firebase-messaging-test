@@ -23,7 +23,7 @@ console.log('app', app);
 
 let reqPermission, token;
 export default function App() {
-  const getTokenFirebase = async (messaging) => {
+  const getTokenFirebase = async (messaging:any) => {
     const options: any = {
       vapidKey:
         'BIuVgsK5OlP-rh_ViyLg1Su98GALUTLFbCf6QypEqkBfXtnPj9QUGkA-ALLkt28wJwCH1g-V4xS-NK12phVXh5E',
@@ -48,9 +48,13 @@ export default function App() {
     console.log('component rendered, importing @capacitor-firebase/messaging');
     // Dynamically import the module AFTER initializeApp, when the component has already rendered
     import('@capacitor-firebase/messaging').then(async (module) => {
-      // reqPermission = module.FirebaseMessaging.requestPermissions();
+      reqPermission = await module.FirebaseMessaging.requestPermissions().catch(err => {
+        console.warn("Could not request permissions", err.message);
+      })
       console.log('@capacitor-firebase/messaging imported, requesting token');
-      token = await getTokenFirebase(module.FirebaseMessaging);
+      token = await getTokenFirebase(module.FirebaseMessaging).catch(err => {
+        console.warn("Could not request token", err.message);
+      })
       console.log('token', token);
     });
   }, []);
